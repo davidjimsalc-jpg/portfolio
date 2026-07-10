@@ -1,0 +1,135 @@
+
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="home.title">David Jimenez Salcedo | Cyber Portfolio</title>
+  </head>
+
+  <body>
+    <main class="page home-page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="#" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <p class="tag">Red Team &middot; Pentesting &middot; Ethical Hacking</p>
+
+        <h1>
+          David Jim&eacute;nez Salcedo<br />
+          <span data-i18n="home.subtitle">Cybersecurity Portfolio</span>
+        </h1>
+
+        <p class="description" data-i18n="home.description">
+          Passionate about offensive security and continuous learning. Here you
+          will find my writeups, projects, tools, cheatsheets and technical
+          research developed throughout my journey into cybersecurity.
+        </p>
+
+        <div class="buttons">
+          <a href="/about" class="primary" data-i18n="home.about">About Me</a>
+          <a href="/certifications" class="secondary" data-i18n="home.certifications">Certifications -></a>
+        </div>
+
+        <div class="lock is-closed" data-scroll-lock>
+          <div class="shackle"></div>
+          <div class="body">
+            <div class="dots">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+
+    <script>
+      const lock = document.querySelector<HTMLElement>("[data-scroll-lock]");
+      let lastScrollY = window.scrollY;
+      let touchStartY = 0;
+
+      const setLockState = (direction: "up" | "down") => {
+        if (!lock) {
+          return;
+        }
+
+        lock.classList.toggle("is-open", direction === "down");
+        lock.classList.toggle("is-closed", direction === "up");
+      };
+
+      window.addEventListener(
+        "wheel",
+        (event) => {
+          if (Math.abs(event.deltaY) < 2) {
+            return;
+          }
+
+          setLockState(event.deltaY > 0 ? "down" : "up");
+        },
+        { passive: true },
+      );
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          const currentScrollY = window.scrollY;
+
+          if (Math.abs(currentScrollY - lastScrollY) > 4) {
+            setLockState(currentScrollY > lastScrollY ? "down" : "up");
+            lastScrollY = currentScrollY;
+          }
+        },
+        { passive: true },
+      );
+
+      window.addEventListener(
+        "touchstart",
+        (event) => {
+          touchStartY = event.touches[0]?.clientY ?? 0;
+        },
+        { passive: true },
+      );
+
+      window.addEventListener(
+        "touchmove",
+        (event) => {
+          const currentY = event.touches[0]?.clientY ?? touchStartY;
+          const deltaY = touchStartY - currentY;
+
+          if (Math.abs(deltaY) > 8) {
+            setLockState(deltaY > 0 ? "down" : "up");
+          }
+        },
+        { passive: true },
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,303 @@
+---
+import "../../styles/global.css";
+import LanguageToggle from "../../components/LanguageToggle.astro";
+import ToolMarquee from "../../components/ToolMarquee.astro";
+import { getCollection } from "astro:content";
+
+const platformLabels = {
+  htb: "HTB",
+  tryhackme: "TryHackMe",
+};
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const titleFromId = (id: string) => {
+  const filename = id.split("/").at(-1) ?? id;
+  return filename
+    .replace(/\.(md|mdx)$/i, "")
+    .replace(/^\d+[\s.-]+/, "")
+    .replace(/[-_]+/g, " ");
+};
+
+const platformFromId = (id: string) => {
+  const platform = id.split("/")[0] ?? "writeups";
+  return platformLabels[platform as keyof typeof platformLabels] ?? platform;
+};
+
+function slugFromWriteup(writeup: Awaited<ReturnType<typeof getCollection>>[number]) {
+  return (
+    writeup.data.slug ??
+    writeup.id
+      .replace(/\.(md|mdx)$/i, "")
+      .split("/")
+      .map(slugify)
+      .join("/")
+  );
+}
+
+const writeups = (await getCollection("writeups"))
+  .filter((writeup) => !writeup.data.draft)
+  .map((writeup) => {
+    const title = writeup.data.title ?? titleFromId(writeup.id);
+    const platform = writeup.data.platform ?? platformFromId(writeup.id);
+    const tags = [
+      platform,
+      ...writeup.data.categories,
+      ...writeup.data.tags,
+      writeup.data.difficulty,
+    ].filter(Boolean);
+
+    return {
+      ...writeup,
+      title,
+      platform,
+      tags,
+      href: `/writeups/${slugFromWriteup(writeup)}`,
+      summary:
+        writeup.data.summary ??
+        "Writeup tecnico importado desde Obsidian. Abre la ficha para ver el desarrollo completo.",
+      searchableText: [title, platform, ...tags, writeup.body].join(" "),
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const writeupsByPlatform = writeups.reduce<Record<string, typeof writeups>>(
+  (groups, writeup) => {
+    groups[writeup.platform] ??= [];
+    groups[writeup.platform].push(writeup);
+    return groups;
+  },
+  {},
+);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="writeups.title">Writeups | Cyber Portfolio</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="writeups-page">
+        <header class="section-heading">
+          <p class="tag" data-i18n="writeups.tag">Writeups</p>
+
+          <h1>
+            <span data-i18n="writeups.headingA">Technical</span><br />
+            <span data-i18n="writeups.headingB">Writeups</span>
+          </h1>
+        </header>
+
+        <div class="writeups-search">
+          <input
+            id="writeupSearch"
+            type="text"
+            data-i18n-placeholder="writeups.search"
+            placeholder="Search by title, tag, platform, tool..."
+          />
+        </div>
+
+        <div class="writeups-layout">
+          <aside class="writeups-sidebar">
+            <h2 data-i18n="writeups.sidebar">WRITEUPS</h2>
+
+            {
+              Object.entries(writeupsByPlatform).map(([platform, platformWriteups], index) => (
+                <details
+                  open={index === 0}
+                  data-search={platformWriteups
+                    .map((writeup) => writeup.searchableText)
+                    .join(" ")}
+                >
+                  <summary>{platform}</summary>
+                  {platformWriteups.map((writeup) => (
+                    <a href={writeup.href} data-search={writeup.searchableText}>
+                      {writeup.title}
+                    </a>
+                  ))}
+                </details>
+              ))
+            }
+          </aside>
+
+          <section class="writeups-content">
+            {
+              writeups.map((writeup) => (
+                <article class="writeup-card" data-search={writeup.searchableText}>
+                  <h2>
+                    <a class="writeup-title-link" href={writeup.href}>
+                      {writeup.title}
+                    </a>
+                  </h2>
+
+                  <p data-i18n={writeup.data.summary ? undefined : "writeups.summary"}>
+                    {writeup.summary}
+                  </p>
+
+                  <div class="writeup-tags">
+                    {writeup.tags.map((tag) => (
+                      <span>{tag}</span>
+                    ))}
+                  </div>
+                </article>
+              ))
+            }
+          </section>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById(
+        "writeupSearch"
+        ) as HTMLInputElement;
+
+        const cards = document.querySelectorAll<HTMLElement>(".writeup-card");
+        const sidebarGroups =
+          document.querySelectorAll<HTMLDetailsElement>(".writeups-sidebar details");
+        const sidebarLinks =
+          document.querySelectorAll<HTMLAnchorElement>(".writeups-sidebar a");
+        const highlightRoots = [
+          document.querySelector<HTMLElement>(".writeups-content"),
+        ].filter(Boolean) as HTMLElement[];
+        const escapeRegExp = (value: string) =>
+          value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        const clearSearchHighlights = () => {
+          document.querySelectorAll<HTMLElement>(".search-highlight").forEach((mark) => {
+            mark.replaceWith(document.createTextNode(mark.textContent ?? ""));
+          });
+
+          highlightRoots.forEach((root) => root.normalize());
+        };
+
+        const highlightMatches = (root: HTMLElement, term: string) => {
+          const searchPattern = new RegExp(escapeRegExp(term), "gi");
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          const textNodes: Text[] = [];
+          let firstHighlight: HTMLElement | null = null;
+
+          while (walker.nextNode()) {
+            textNodes.push(walker.currentNode as Text);
+          }
+
+          textNodes.forEach((node) => {
+            const value = node.textContent ?? "";
+            const matches = Array.from(value.matchAll(searchPattern));
+
+            if (matches.length === 0) {
+              return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            let lastIndex = 0;
+
+            matches.forEach((match) => {
+              if (match.index === undefined) {
+                return;
+              }
+
+              const mark = document.createElement("mark");
+              mark.className = "search-highlight";
+              mark.textContent = match[0];
+
+              fragment.append(value.slice(lastIndex, match.index));
+              fragment.append(mark);
+              lastIndex = match.index + match[0].length;
+              firstHighlight ??= mark;
+            });
+
+            fragment.append(value.slice(lastIndex));
+            node.replaceWith(fragment);
+          });
+
+          return firstHighlight;
+        };
+
+        const updateSearchHighlights = (term: string) => {
+          clearSearchHighlights();
+
+          if (!term) {
+            return;
+          }
+
+          let firstHighlight: HTMLElement | null = null;
+
+          highlightRoots.forEach((root) => {
+            firstHighlight ??= highlightMatches(root, term);
+          });
+
+          firstHighlight?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        };
+
+        searchInput.addEventListener("input", () => {
+        const value = searchInput.value.toLowerCase().trim();
+
+        cards.forEach((card) => {
+        const searchableText = card.dataset.search?.toLowerCase() || "";
+        const title =
+            card.querySelector("h2")?.textContent?.toLowerCase() || "";
+
+        const text = `${searchableText} ${title}`;
+
+        card.style.display = text.includes(value) ? "block" : "none";
+        });
+
+        sidebarLinks.forEach((link) => {
+        const searchableText = link.dataset.search?.toLowerCase() || "";
+        link.style.display = searchableText.includes(value) ? "block" : "none";
+        });
+
+        sidebarGroups.forEach((group) => {
+        const searchableText = group.dataset.search?.toLowerCase() || "";
+        const isVisible = !value || searchableText.includes(value);
+        group.style.display = isVisible ? "block" : "none";
+
+        if (value && isVisible) {
+            group.open = true;
+        }
+        });
+
+        updateSearchHighlights(searchInput.value.trim());
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+<button
+  class="language-toggle"
+  type="button"
+  aria-label="Cambiar idioma"
+  title="Cambiar idioma"
+>
+  <span class="language-toggle-flag is-uk" aria-hidden="true"></span>
+</button>
+
+<script>
+  const translations = {
+    en: {
+      "nav.home": "Home",
+      "nav.writeups": "Writeups",
+      "nav.projects": "Projects / Tools",
+      "nav.cheatsheets": "Cheatsheets",
+      "nav.contact": "Contact",
+      "nav.cv": "Download CV",
+      "home.title": "David Jimenez Salcedo | Cyber Portfolio",
+      "home.subtitle": "Cybersecurity Portfolio",
+      "home.description":
+        "Passionate about offensive security and continuous learning. Here you will find my writeups, projects, tools, cheatsheets and technical research developed throughout my journey into cybersecurity.",
+      "home.about": "About Me",
+      "home.certifications": "Certifications ->",
+      "about.title": "About Me | David Jimenez Salcedo",
+      "about.tag": "About Me",
+      "about.role": "Cybersecurity Engineer",
+      "about.description":
+        "Cybersecurity Engineer with SOC N1/N2 and Digital Risk Protection experience at Telefonica Tech, combining defensive operations with hands-on training in Offensive Security, Active Directory, Web & API Security and Enterprise Pentesting.",
+      "about.technical": "Technical Skills",
+      "about.soft": "Soft Skills",
+      "about.cardOffensiveTitle": "Offensive Security",
+      "about.cardOffensive1": "Penetration Testing over infrastructure, WebApps and APIs",
+      "about.cardOffensive2": "Vulnerability discovery, validation and exploitability analysis",
+      "about.cardOffensive3": "Active Directory Security, internal networks and enterprise attack paths",
+      "about.cardOffensive4": "Privilege Escalation, Lateral Movement, Pivoting and Post-Exploitation",
+      "about.cardOffensive5": "eJPTv2 certified and CPTS currently in progress",
+      "about.cardDeliveryTitle": "Reporting & Communication",
+      "about.cardDelivery1": "Technical reporting with findings, risk, impact and remediation guidance",
+      "about.cardDelivery2": "Ability to explain technical ideas clearly to different audiences",
+      "about.cardDelivery3": "Spanish native and English B2",
+      "about.cardDelivery4": "Documentation of methodologies, writeups and lab evidence",
+      "about.cardDelivery5": "Comfortable working with procedures, priorities and delivery quality",
+      "about.cardLabTitle": "Enterprise AD Laboratory",
+      "about.cardLab1": "Enterprise Active Directory lab designed for Red Team simulations",
+      "about.cardLab2": "Attack paths aligned with MITRE ATT&CK techniques",
+      "about.cardLab3": "Kerberoasting, AS-REP Roasting, NTLM Relay and Password Spraying",
+      "about.cardLab4": "Pass-the-Hash, Pass-the-Ticket, DCSync, Golden Ticket and Silver Ticket",
+      "about.cardLab5": "Blue Team detectability analysis and mitigation reporting",
+      "about.cardToolsTitle": "Tools & Scripting",
+      "about.cardTools1": "Burp Suite, Nmap, Wireshark, Metasploit, FFUF and Gobuster",
+      "about.cardTools2": "Python, PowerShell, Bash, Java, SQL, HTML, CSS and JavaScript",
+      "about.cardTools3": "BloodHound, SharpHound, Impacket, NetExec, Mimikatz, Responder and Rubeus",
+      "about.cardTools4": "Windows, Windows Server, Kali Linux, Ubuntu and Debian",
+      "about.cardTools5": "TCP/IP, DNS, HTTP/S, SMB, LDAP, Kerberos, WinRM, SSH and RDP",
+      "about.cardBlueTitle": "Blue Team Background",
+      "about.cardBlue1": "SOC N1/N2 operations, alert triage and incident escalation",
+      "about.cardBlue2": "Digital Risk Protection and external threat analysis",
+      "about.cardBlue3": "IoC correlation, threat validation and defensive visibility",
+      "about.cardBlue4": "Microsoft Sentinel, Splunk, QRadar, NetWitness and Cortex XSIAM",
+      "about.cardBlue5": "Useful attacker mindset with defender context",
+      "about.cardMindsetTitle": "Professional Mindset",
+      "about.cardMindset1": "Passion for technology, offensive security and continuous learning",
+      "about.cardMindset2": "Proactive attitude toward challenges and hands-on labs",
+      "about.cardMindset3": "Analytical thinking and attention to technical detail",
+      "about.cardMindset4": "Creative approach to attack paths and vulnerability validation",
+      "about.cardMindset5": "Motivated to join an Offensive Security team",
+      "certs.title": "Certifications | David Jimenez Salcedo",
+      "certs.tag": "Certifications",
+      "certs.heading": "Learning Path",
+      "certs.description":
+        "A selection of certifications focused on Linux administration, ethical hacking, penetration testing and offensive security.",
+      "certs.soon": "Coming Soon",
+      "certs.uaxDescription":
+        "University degree focused on computer systems, software development, networking, operating systems, cybersecurity fundamentals and cloud technologies. It provides a solid understanding of how hardware, software and infrastructure interact, forming the technical foundation required to design, develop and secure modern information systems.",
+      "certs.lpicDescription":
+        "Linux Professional Institute certification focused on GNU/Linux administration, command line usage, system maintenance, permissions, networking basics and essential services.",
+      "certs.ciscoDescription":
+        "Introductory ethical hacking certification covering security fundamentals, reconnaissance, vulnerability analysis, basic exploitation concepts, defensive thinking and responsible testing methodology.",
+      "certs.ejptDescription":
+        "Junior penetration testing certification focused on practical assessment methodology, network enumeration, web application testing, exploitation basics, pivoting and report writing.",
+      "certs.htbPathDescription":
+        "Comprehensive training path designed to develop real-world penetration testing skills through hands-on laboratories. Covers the complete penetration testing methodology, including information gathering, web exploitation, Active Directory attacks, privilege escalation, lateral movement, pivoting, post-exploitation and professional report writing. The path prepares students for the CPTS certification by simulating realistic enterprise environments.",
+      "certs.cptsDescription":
+        "Advanced hands-on penetration testing certification with a strong enterprise focus, widely recognized for its more complete coverage of real-world enterprise environments than OSCP. It covers the full assessment lifecycle: information gathering, vulnerability validation, web and API exploitation, Active Directory attacks, pivoting, lateral movement, privilege escalation, post-exploitation and professional reporting.",
+      "contact.title": "Contact | David Jimenez Salcedo",
+      "contact.tag": "Contact",
+      "contact.heading": "Let's Connect",
+      "contact.headingA": "Let's",
+      "contact.headingB": "Connect",
+      "contact.description":
+        "Feel free to reach out through email, LinkedIn, GitHub or my Hack The Box profiles.",
+      "writeups.title": "Writeups | Cyber Portfolio",
+      "writeups.tag": "Writeups",
+      "writeups.headingA": "Technical",
+      "writeups.headingB": "Writeups",
+      "writeups.sidebar": "WRITEUPS",
+      "writeups.search": "Search by title, tag, platform, tool...",
+      "writeups.summary":
+        "Technical writeup imported from Obsidian. Open the card to view the full walkthrough.",
+      "cheatsheets.title": "Cheatsheets | Cyber Portfolio",
+      "cheatsheets.tag": "Cheatsheets",
+      "cheatsheets.headingA": "Certification",
+      "cheatsheets.headingB": "Cheatsheets",
+      "cheatsheets.sidebar": "CHEATSHEETS",
+      "cheatsheets.search": "Search by title or content...",
+      "cheatsheets.emptyTitle": "No cheatsheets yet",
+      "cheatsheets.emptyText":
+        "Add Markdown files under subfolders like src/content/cheatsheets/ejptv2/recon or src/content/cheatsheets/cpts/active-directory and they will appear here.",
+      "projects.title": "Projects / Tools | Cyber Portfolio",
+      "projects.tag": "Projects / Tools",
+      "projects.headingA": "Projects &",
+      "projects.headingB": "Tools",
+      "projects.sidebar": "PROJECTS / TOOLS",
+      "projects.search": "Search by project, tool or description...",
+      "projects.sectionProjects": "Projects",
+      "projects.sectionTools": "Tools",
+      "projects.tfgDescription":
+        "Universidad Alfonso X el Sabio · Bachelor's Degree in Computer Engineering (2022-2026). Final Degree Project: design and implementation of an enterprise Active Directory laboratory to simulate the complete lifecycle of an Advanced Persistent Threat (APT) using Red Team methodologies, evaluating detection capabilities from a Blue Team perspective.",
+      "projects.tool1Description":
+        "New cybersecurity tools will be added soon.",
+      "projects.view": "View",
+    },
+    es: {
+      "nav.home": "Inicio",
+      "nav.writeups": "Writeups",
+      "nav.projects": "Proyectos / Herramientas",
+      "nav.cheatsheets": "Cheatsheets",
+      "nav.contact": "Contacto",
+      "nav.cv": "Descargar CV",
+      "home.title": "David Jimenez Salcedo | Portfolio de Ciberseguridad",
+      "home.subtitle": "Portfolio de Ciberseguridad",
+      "home.description":
+        "Apasionado por la seguridad ofensiva y el aprendizaje continuo. Aqui encontraras mis writeups, proyectos, herramientas, cheatsheets e investigacion tecnica desarrollada durante mi camino en ciberseguridad.",
+      "home.about": "Sobre mi",
+      "home.certifications": "Certificaciones ->",
+      "about.title": "Sobre mi | David Jimenez Salcedo",
+      "about.tag": "Sobre mi",
+      "about.role": "Ingeniero de Ciberseguridad",
+      "about.description":
+        "Ingeniero de Ciberseguridad con experiencia SOC N1/N2 y Digital Risk Protection en Telefonica Tech, combinando operaciones defensivas con formacion practica en Offensive Security, Active Directory, Web & API Security y Enterprise Pentesting.",
+      "about.technical": "Habilidades tecnicas",
+      "about.soft": "Habilidades personales",
+      "about.cardOffensiveTitle": "Seguridad Ofensiva",
+      "about.cardOffensive1": "Pentesting sobre infraestructuras, WebApps y APIs",
+      "about.cardOffensive2": "Descubrimiento, validacion y analisis de explotabilidad de vulnerabilidades",
+      "about.cardOffensive3": "Active Directory Security, redes internas y rutas de ataque empresariales",
+      "about.cardOffensive4": "Privilege Escalation, Lateral Movement, Pivoting y Post-Exploitation",
+      "about.cardOffensive5": "Certificacion eJPTv2 y CPTS actualmente en curso",
+      "about.cardDeliveryTitle": "Reporting y Comunicacion",
+      "about.cardDelivery1": "Informes tecnicos con hallazgos, riesgo, impacto y recomendaciones",
+      "about.cardDelivery2": "Capacidad para transmitir ideas tecnicas a distintas audiencias",
+      "about.cardDelivery3": "Español nativo e ingles B2",
+      "about.cardDelivery4": "Documentacion de metodologias, writeups y evidencias de laboratorio",
+      "about.cardDelivery5": "Comodidad trabajando con procedimientos, prioridades y calidad de entrega",
+      "about.cardLabTitle": "Laboratorio Enterprise AD",
+      "about.cardLab1": "Laboratorio empresarial de Active Directory para simulaciones Red Team",
+      "about.cardLab2": "Rutas de ataque alineadas con tecnicas MITRE ATT&CK",
+      "about.cardLab3": "Kerberoasting, AS-REP Roasting, NTLM Relay y Password Spraying",
+      "about.cardLab4": "Pass-the-Hash, Pass-the-Ticket, DCSync, Golden Ticket y Silver Ticket",
+      "about.cardLab5": "Analisis de detectabilidad Blue Team y reporting de mitigacion",
+      "about.cardToolsTitle": "Herramientas y Scripting",
+      "about.cardTools1": "Burp Suite, Nmap, Wireshark, Metasploit, FFUF y Gobuster",
+      "about.cardTools2": "Python, PowerShell, Bash, Java, SQL, HTML, CSS y JavaScript",
+      "about.cardTools3": "BloodHound, SharpHound, Impacket, NetExec, Mimikatz, Responder y Rubeus",
+      "about.cardTools4": "Windows, Windows Server, Kali Linux, Ubuntu y Debian",
+      "about.cardTools5": "TCP/IP, DNS, HTTP/S, SMB, LDAP, Kerberos, WinRM, SSH y RDP",
+      "about.cardBlueTitle": "Contexto Blue Team",
+      "about.cardBlue1": "Operaciones SOC N1/N2, triage de alertas y escalado de incidentes",
+      "about.cardBlue2": "Digital Risk Protection y analisis de amenazas externas",
+      "about.cardBlue3": "Correlacion de IoCs, validacion de amenazas y visibilidad defensiva",
+      "about.cardBlue4": "Microsoft Sentinel, Splunk, QRadar, NetWitness y Cortex XSIAM",
+      "about.cardBlue5": "Mentalidad ofensiva con contexto defensivo",
+      "about.cardMindsetTitle": "Mentalidad Profesional",
+      "about.cardMindset1": "Pasion por la tecnologia, la seguridad ofensiva y el aprendizaje continuo",
+      "about.cardMindset2": "Actitud proactiva ante retos y laboratorios practicos",
+      "about.cardMindset3": "Pensamiento analitico y atencion al detalle tecnico",
+      "about.cardMindset4": "Enfoque creativo para rutas de ataque y validacion de vulnerabilidades",
+      "about.cardMindset5": "Motivacion por incorporarme a un equipo de Seguridad Ofensiva",
+      "certs.title": "Certificaciones | David Jimenez Salcedo",
+      "certs.tag": "Certificaciones",
+      "certs.heading": "Ruta de Aprendizaje",
+      "certs.description":
+        "Una seleccion de certificaciones enfocadas en administracion Linux, hacking etico, pentesting y seguridad ofensiva.",
+      "certs.soon": "Proximamente",
+      "certs.uaxDescription":
+        "Grado universitario enfocado en sistemas informaticos, desarrollo de software, redes, sistemas operativos, fundamentos de ciberseguridad y tecnologias cloud. Aporta una base solida para comprender como interactuan hardware, software e infraestructura, formando la base tecnica necesaria para diseñar, desarrollar y securizar sistemas modernos.",
+      "certs.lpicDescription":
+        "Certificacion de Linux Professional Institute centrada en administracion GNU/Linux, uso de linea de comandos, mantenimiento de sistemas, permisos, fundamentos de redes y servicios esenciales.",
+      "certs.ciscoDescription":
+        "Certificacion introductoria de hacking etico que cubre fundamentos de seguridad, reconocimiento, analisis de vulnerabilidades, conceptos basicos de explotacion, pensamiento defensivo y metodologia responsable de pruebas.",
+      "certs.ejptDescription":
+        "Certificacion junior de pentesting centrada en metodologia practica de evaluacion, enumeracion de redes, pruebas de aplicaciones web, fundamentos de explotacion, pivoting y elaboracion de informes.",
+      "certs.htbPathDescription":
+        "Ruta formativa completa orientada a desarrollar habilidades reales de pentesting mediante laboratorios practicos. Cubre la metodologia completa, incluyendo recoleccion de informacion, explotacion web, ataques Active Directory, escalada de privilegios, movimiento lateral, pivoting, post-explotacion y reporting profesional. La ruta prepara para la certificacion CPTS simulando entornos empresariales realistas.",
+      "certs.cptsDescription":
+        "Certificacion avanzada y practica de pentesting con un fuerte enfoque enterprise, ampliamente reconocida por ofrecer una cobertura mas completa de entornos empresariales reales que OSCP. Cubre el ciclo completo de una evaluacion: recoleccion de informacion, validacion de vulnerabilidades, explotacion web y API, ataques Active Directory, pivoting, movimiento lateral, escalada de privilegios, post-explotacion y reporting profesional.",
+      "contact.title": "Contacto | David Jimenez Salcedo",
+      "contact.tag": "Contacto",
+      "contact.heading": "Conectamos",
+      "contact.headingA": "Conectamos",
+      "contact.headingB": "",
+      "contact.description":
+        "Puedes contactar conmigo por email, LinkedIn, GitHub o mis perfiles de Hack The Box.",
+      "writeups.title": "Writeups | Cyber Portfolio",
+      "writeups.tag": "Writeups",
+      "writeups.headingA": "Writeups",
+      "writeups.headingB": "Tecnicos",
+      "writeups.sidebar": "WRITEUPS",
+      "writeups.search": "Buscar por titulo, tag, plataforma, herramienta...",
+      "writeups.summary":
+        "Writeup tecnico importado desde Obsidian. Abre la ficha para ver el desarrollo completo.",
+      "cheatsheets.title": "Cheatsheets | Cyber Portfolio",
+      "cheatsheets.tag": "Cheatsheets",
+      "cheatsheets.headingA": "Cheatsheets",
+      "cheatsheets.headingB": "de Certificaciones",
+      "cheatsheets.sidebar": "CHEATSHEETS",
+      "cheatsheets.search": "Buscar por titulo o contenido...",
+      "cheatsheets.emptyTitle": "Aun no hay cheatsheets",
+      "cheatsheets.emptyText":
+        "Anade archivos Markdown en subcarpetas como src/content/cheatsheets/ejptv2/recon o src/content/cheatsheets/cpts/active-directory y apareceran aqui.",
+      "projects.title": "Proyectos / Herramientas | Cyber Portfolio",
+      "projects.tag": "Proyectos / Herramientas",
+      "projects.headingA": "Proyectos y",
+      "projects.headingB": "Herramientas",
+      "projects.sidebar": "PROYECTOS / HERRAMIENTAS",
+      "projects.search": "Buscar por proyecto, herramienta o descripcion...",
+      "projects.sectionProjects": "Proyectos",
+      "projects.sectionTools": "Herramientas",
+      "projects.tfgDescription":
+        "Universidad Alfonso X el Sabio · Grado en Ingenieria Informatica (2022-2026). Trabajo Final de Grado: diseno e implementacion de un laboratorio empresarial de Active Directory para simular el ciclo completo de una amenaza persistente avanzada (APT) mediante metodologias Red Team, evaluando la capacidad de deteccion desde la perspectiva Blue Team.",
+      "projects.tool1Description":
+        "Proximamente se anadiran nuevas herramientas de ciberseguridad.",
+      "projects.view": "Ver",
+    },
+  } as const;
+
+  type Language = keyof typeof translations;
+  const storageKey = "cyber-portfolio-language";
+  const toggle = document.querySelector<HTMLButtonElement>(".language-toggle");
+  const flag = toggle?.querySelector<HTMLElement>(".language-toggle-flag");
+
+  const getLanguage = (): Language => {
+    const savedLanguage = localStorage.getItem(storageKey);
+    return savedLanguage === "es" ? "es" : "en";
+  };
+
+  const applyLanguage = (language: Language) => {
+    const dictionary = translations[language];
+    document.documentElement.lang = language;
+
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
+      const key = element.dataset.i18n;
+
+      if (key && key in dictionary) {
+        element.textContent = dictionary[key as keyof typeof dictionary];
+      }
+    });
+
+    document
+      .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-i18n-placeholder]")
+      .forEach((element) => {
+        const key = element.dataset.i18nPlaceholder;
+
+        if (key && key in dictionary) {
+          element.placeholder = dictionary[key as keyof typeof dictionary];
+        }
+      });
+
+    if (flag && toggle) {
+      flag.classList.toggle("is-spain", language === "es");
+      flag.classList.toggle("is-uk", language !== "es");
+      toggle.setAttribute(
+        "aria-label",
+        language === "es" ? "Cambiar a ingles" : "Switch to Spanish",
+      );
+      toggle.title = language === "es" ? "Cambiar a ingles" : "Switch to Spanish";
+    }
+  };
+
+  applyLanguage(getLanguage());
+
+  toggle?.addEventListener("click", () => {
+    const nextLanguage = getLanguage() === "es" ? "en" : "es";
+    localStorage.setItem(storageKey, nextLanguage);
+    applyLanguage(nextLanguage);
+  });
+</script>

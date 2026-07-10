@@ -1,0 +1,15 @@
+
+[[1. Fuerza Bruta - Hydra y MSF login]]
+[[2. Crackmapexec]]
+[[3. Msfvenom]]
+[[4. Curl]]
+[[5. dirb]]
+[[6. xfreerdp]]
+[[7. Netcat]]
+[[8. John]]
+[[9. Hashcat]]
+[[10. Burp Suite]]
+[[11. WPScan]]
+[[12. Nikto]]
+[[13. Gobuster]]
+

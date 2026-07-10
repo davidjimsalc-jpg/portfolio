@@ -1,0 +1,281 @@
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+
+const projects = [
+  {
+    title: "TFG",
+    descriptionKey: "projects.tfgDescription",
+    description:
+      "Universidad Alfonso X el Sabio · Grado en Ingenieria Informatica (2022-2026). Trabajo Final de Grado: diseno e implementacion de un laboratorio empresarial de Active Directory para simular el ciclo completo de una amenaza persistente avanzada (APT) mediante metodologias Red Team, evaluando la capacidad de deteccion desde la perspectiva Blue Team.",
+    href: "/projects/TFG_DavidJimenezSalcedo.pdf",
+  },
+];
+
+const tools = [
+  {
+    title: "Tool 1",
+    descriptionKey: "projects.tool1Description",
+    description: "Proximamente se anadiran nuevas herramientas de ciberseguridad.",
+    href: "https://github.com/davidjimsalc-jpg",
+  },
+];
+
+const sections = [
+  { title: "Projects", titleKey: "projects.sectionProjects", items: projects },
+  { title: "Herramientas", titleKey: "projects.sectionTools", items: tools },
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="projects.title">Projects / Tools | Cyber Portfolio</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="writeups-page projects-tools-page">
+        <header class="section-heading">
+          <p class="tag" data-i18n="projects.tag">Projects / Tools</p>
+
+          <h1>
+            <span data-i18n="projects.headingA">Projects &</span><br />
+            <span data-i18n="projects.headingB">Herramientas</span>
+          </h1>
+        </header>
+
+        <div class="writeups-search">
+          <input
+            id="projectsToolsSearch"
+            type="text"
+            data-i18n-placeholder="projects.search"
+            placeholder="Search by project, tool or description..."
+          />
+        </div>
+
+        <div class="writeups-layout">
+          <aside class="writeups-sidebar projects-tools-sidebar">
+            <h2 data-i18n="projects.sidebar">PROJECTS / TOOLS</h2>
+
+            {
+              sections.map((section, index) => (
+                <details
+                  open={index === 0}
+                  data-search={section.items
+                    .map((item) => `${item.title} ${item.description}`)
+                    .join(" ")}
+                >
+                  <summary data-i18n={section.titleKey}>{section.title}</summary>
+                  {section.items.map((item) => (
+                    <a
+                      href={item.href}
+                      data-search={`${item.title} ${item.description}`}
+                      target="_blank"
+                    >
+                      {item.title}
+                    </a>
+                  ))}
+                </details>
+              ))
+            }
+          </aside>
+
+          <section class="writeups-content projects-tools-content">
+            {
+              sections.map((section) => (
+                <div class="projects-tools-section">
+                  <h2 data-i18n={section.titleKey}>{section.title}</h2>
+
+                  {section.items.map((item) => (
+                    <article
+                      id={item.title.toLowerCase().replaceAll(" ", "-")}
+                      class="writeup-card project-tool-card"
+                      data-search={`${section.title} ${item.title} ${item.description}`}
+                    >
+                      <div>
+                        <p class="project-tool-type" data-i18n={section.titleKey}>
+                          {section.title}
+                        </p>
+                        <h3>
+                          <a class="writeup-title-link" href={item.href} target="_blank">
+                            {item.title}
+                          </a>
+                        </h3>
+                        <p data-i18n={item.descriptionKey}>{item.description}</p>
+                      </div>
+
+                      <a
+                        class="project-tool-action"
+                        href={item.href}
+                        target="_blank"
+                        data-i18n="projects.view"
+                      >
+                        View
+                      </a>
+                    </article>
+                  ))}
+                </div>
+              ))
+            }
+          </section>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById(
+        "projectsToolsSearch",
+      ) as HTMLInputElement;
+      const cards =
+        document.querySelectorAll<HTMLElement>(".project-tool-card");
+      const sidebarGroups =
+        document.querySelectorAll<HTMLDetailsElement>(
+          ".projects-tools-sidebar details",
+        );
+      const sidebarLinks =
+        document.querySelectorAll<HTMLAnchorElement>(
+          ".projects-tools-sidebar a",
+        );
+      const sections =
+        document.querySelectorAll<HTMLElement>(".projects-tools-section");
+      const highlightRoots = [
+        document.querySelector<HTMLElement>(".projects-tools-content"),
+      ].filter(Boolean) as HTMLElement[];
+      const escapeRegExp = (value: string) =>
+        value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      const clearSearchHighlights = () => {
+        document.querySelectorAll<HTMLElement>(".search-highlight").forEach((mark) => {
+          mark.replaceWith(document.createTextNode(mark.textContent ?? ""));
+        });
+
+        highlightRoots.forEach((root) => root.normalize());
+      };
+
+      const highlightMatches = (root: HTMLElement, term: string) => {
+        const searchPattern = new RegExp(escapeRegExp(term), "gi");
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const textNodes: Text[] = [];
+        let firstHighlight: HTMLElement | null = null;
+
+        while (walker.nextNode()) {
+          textNodes.push(walker.currentNode as Text);
+        }
+
+        textNodes.forEach((node) => {
+          const value = node.textContent ?? "";
+          const matches = Array.from(value.matchAll(searchPattern));
+
+          if (matches.length === 0) {
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+          let lastIndex = 0;
+
+          matches.forEach((match) => {
+            if (match.index === undefined) {
+              return;
+            }
+
+            const mark = document.createElement("mark");
+            mark.className = "search-highlight";
+            mark.textContent = match[0];
+
+            fragment.append(value.slice(lastIndex, match.index));
+            fragment.append(mark);
+            lastIndex = match.index + match[0].length;
+            firstHighlight ??= mark;
+          });
+
+          fragment.append(value.slice(lastIndex));
+          node.replaceWith(fragment);
+        });
+
+        return firstHighlight;
+      };
+
+      const updateSearchHighlights = (term: string) => {
+        clearSearchHighlights();
+
+        if (!term) {
+          return;
+        }
+
+        let firstHighlight: HTMLElement | null = null;
+
+        highlightRoots.forEach((root) => {
+          firstHighlight ??= highlightMatches(root, term);
+        });
+
+        firstHighlight?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      };
+
+      searchInput.addEventListener("input", () => {
+        const value = searchInput.value.toLowerCase().trim();
+
+        cards.forEach((card) => {
+          const text = card.dataset.search?.toLowerCase() || "";
+          card.style.display = text.includes(value) ? "flex" : "none";
+        });
+
+        sidebarLinks.forEach((link) => {
+          const text = link.dataset.search?.toLowerCase() || "";
+          link.style.display = text.includes(value) ? "block" : "none";
+        });
+
+        sidebarGroups.forEach((group) => {
+          const text = group.dataset.search?.toLowerCase() || "";
+          const isVisible = !value || text.includes(value);
+          group.style.display = isVisible ? "block" : "none";
+
+          if (value && isVisible) {
+            group.open = true;
+          }
+        });
+
+        sections.forEach((section) => {
+          const hasVisibleCard = Array.from(
+            section.querySelectorAll<HTMLElement>(".project-tool-card"),
+          ).some((card) => card.style.display !== "none");
+          section.style.display = hasVisibleCard ? "block" : "none";
+        });
+
+        updateSearchHighlights(searchInput.value.trim());
+      });
+    </script>
+  </body>
+</html>

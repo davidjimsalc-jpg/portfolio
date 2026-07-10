@@ -1,0 +1,134 @@
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="about.title">About Me | David Jimenez Salcedo</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="about">
+        <p class="tag" data-i18n="about.tag">About Me</p>
+
+        <h1>
+          David Jim&eacute;nez Salcedo<br />
+          <span data-i18n="about.role">Cybersecurity Engineer</span>
+        </h1>
+
+        <p class="description" data-i18n="about.description">
+          Cybersecurity Engineer with SOC N1/N2 and Digital Risk Protection
+          experience at Telefonica Tech, combining defensive operations with
+          hands-on training in Offensive Security, Active Directory, Web & API
+          Security and Enterprise Pentesting.
+        </p>
+
+        <div class="skill-cards">
+          <article class="skill-card">
+            <h2 data-i18n="about.cardOffensiveTitle">Offensive Security</h2>
+
+            <ul>
+              <li data-i18n="about.cardOffensive1">Penetration Testing over infrastructure, WebApps and APIs</li>
+              <li data-i18n="about.cardOffensive2">Vulnerability discovery, validation and exploitability analysis</li>
+              <li data-i18n="about.cardOffensive3">Active Directory Security, internal networks and enterprise attack paths</li>
+              <li data-i18n="about.cardOffensive4">Privilege Escalation, Lateral Movement, Pivoting and Post-Exploitation</li>
+              <li data-i18n="about.cardOffensive5">eJPTv2 certified and CPTS currently in progress</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h2 data-i18n="about.cardDeliveryTitle">Reporting & Communication</h2>
+
+            <ul>
+              <li data-i18n="about.cardDelivery1">Technical reporting with findings, risk, impact and remediation guidance</li>
+              <li data-i18n="about.cardDelivery2">Ability to explain technical ideas clearly to different audiences</li>
+              <li data-i18n="about.cardDelivery3">Spanish native and English B2</li>
+              <li data-i18n="about.cardDelivery4">Documentation of methodologies, writeups and lab evidence</li>
+              <li data-i18n="about.cardDelivery5">Comfortable working with procedures, priorities and delivery quality</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h2 data-i18n="about.cardLabTitle">Enterprise AD Laboratory</h2>
+
+            <ul>
+              <li data-i18n="about.cardLab1">Enterprise Active Directory lab designed for Red Team simulations</li>
+              <li data-i18n="about.cardLab2">Attack paths aligned with MITRE ATT&CK techniques</li>
+              <li data-i18n="about.cardLab3">Kerberoasting, AS-REP Roasting, NTLM Relay and Password Spraying</li>
+              <li data-i18n="about.cardLab4">Pass-the-Hash, Pass-the-Ticket, DCSync, Golden Ticket and Silver Ticket</li>
+              <li data-i18n="about.cardLab5">Blue Team detectability analysis and mitigation reporting</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h2 data-i18n="about.cardToolsTitle">Tools & Scripting</h2>
+
+            <ul>
+              <li data-i18n="about.cardTools1">Burp Suite, Nmap, Wireshark, Metasploit, FFUF and Gobuster</li>
+              <li data-i18n="about.cardTools2">Python, PowerShell, Bash, Java, SQL, HTML, CSS and JavaScript</li>
+              <li data-i18n="about.cardTools3">BloodHound, SharpHound, Impacket, NetExec, Mimikatz, Responder and Rubeus</li>
+              <li data-i18n="about.cardTools4">Windows, Windows Server, Kali Linux, Ubuntu and Debian</li>
+              <li data-i18n="about.cardTools5">TCP/IP, DNS, HTTP/S, SMB, LDAP, Kerberos, WinRM, SSH and RDP</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h2 data-i18n="about.cardBlueTitle">Blue Team Background</h2>
+
+            <ul>
+              <li data-i18n="about.cardBlue1">SOC N1/N2 operations, alert triage and incident escalation</li>
+              <li data-i18n="about.cardBlue2">Digital Risk Protection and external threat analysis</li>
+              <li data-i18n="about.cardBlue3">IoC correlation, threat validation and defensive visibility</li>
+              <li data-i18n="about.cardBlue4">Microsoft Sentinel, Splunk, QRadar, NetWitness and Cortex XSIAM</li>
+              <li data-i18n="about.cardBlue5">Useful attacker mindset with defender context</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h2 data-i18n="about.cardMindsetTitle">Professional Mindset</h2>
+
+            <ul>
+              <li data-i18n="about.cardMindset1">Passion for technology, offensive security and continuous learning</li>
+              <li data-i18n="about.cardMindset2">Proactive attitude toward challenges and hands-on labs</li>
+              <li data-i18n="about.cardMindset3">Analytical thinking and attention to technical detail</li>
+              <li data-i18n="about.cardMindset4">Creative approach to attack paths and vulnerability validation</li>
+              <li data-i18n="about.cardMindset5">Motivated to join an Offensive Security team</li>
+            </ul>
+          </article>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+  </body>
+</html>

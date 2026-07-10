@@ -1,0 +1,569 @@
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+import { getCollection, render } from "astro:content";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+
+const certificationLabels = {
+  ejptv2: "eJPTv2",
+  cpts: "CPTS",
+};
+
+const acronyms = new Set([
+  "ad",
+  "api",
+  "cpts",
+  "dns",
+  "ffuf",
+  "ftp",
+  "http",
+  "https",
+  "ip",
+  "kdc",
+  "ldap",
+  "msf",
+  "rdp",
+  "rpc",
+  "smb",
+  "smtp",
+  "sql",
+  "sqli",
+  "ssh",
+  "tcp",
+  "udp",
+  "vpn",
+  "web",
+  "xss",
+]);
+
+const pathFromEntry = (entry: { id: string; filePath?: string }) => {
+  const normalizedPath = entry.filePath?.replaceAll("\\", "/");
+  const marker = "src/content/cheatsheets/";
+  const markerIndex = normalizedPath?.toLowerCase().lastIndexOf(marker);
+
+  if (normalizedPath && markerIndex !== undefined && markerIndex >= 0) {
+    return normalizedPath.slice(markerIndex + marker.length);
+  }
+
+  return entry.id;
+};
+
+const titleCase = (value: string) =>
+  value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      const lowerWord = word.toLowerCase();
+
+      if (acronyms.has(lowerWord)) {
+        return lowerWord.toUpperCase();
+      }
+
+      if (/\d/.test(word) && /[a-z]/i.test(word)) {
+        return word;
+      }
+
+      return lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+    })
+    .join(" ");
+
+const prettifySegment = (value: string) => {
+  const cleanValue = value
+    .replace(/\.(md|mdx)$/i, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const numberedMatch = cleanValue.match(/^(\d+)\.\s*(.+)$/);
+
+  if (numberedMatch) {
+    return `${numberedMatch[1]}. ${titleCase(numberedMatch[2])}`;
+  }
+
+  return titleCase(cleanValue);
+};
+
+const numberLabel = (label: string, index: number) => {
+  if (/^\d+\.\s*/.test(label)) {
+    return label;
+  }
+
+  return `${index + 1}. ${label}`;
+};
+
+const titleFromPath = (path: string) => {
+  const filename = path.split("/").at(-1) ?? path;
+  return prettifySegment(filename);
+};
+
+const certificationFromPath = (path: string) => {
+  const certification = path.split("/")[0] ?? "Cheatsheets";
+  return certificationLabels[certification as keyof typeof certificationLabels] ?? certification;
+};
+
+const sectionFromPath = (path: string) => {
+  const section = path.split("/").slice(1, -1).map(prettifySegment).join(" / ");
+  return section || "General";
+};
+
+const collator = new Intl.Collator("es", { numeric: true, sensitivity: "base" });
+const sortByName = <T extends { name: string }>(items: T[]) =>
+  items.sort((a, b) => collator.compare(a.name, b.name));
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+type Cheatsheet = Awaited<ReturnType<typeof getCollection>>[number] & {
+  Content: AstroComponentFactory;
+  title: string;
+  certification: string;
+  section: string;
+  sourcePath: string;
+  searchableText: string;
+};
+
+type CheatsheetFolder = {
+  name: string;
+  children: Record<string, CheatsheetFolder>;
+  cheatsheets: Cheatsheet[];
+};
+
+const createFolder = (name: string): CheatsheetFolder => ({
+  name,
+  children: {},
+  cheatsheets: [],
+});
+
+const renderFolderTree = (
+  folders: Record<string, CheatsheetFolder>,
+  firstCheatsheetId?: string,
+  depth = 1,
+) =>
+  sortByName(Object.values(folders))
+    .map((folder, folderIndex) => {
+      const folderLabel = numberLabel(prettifySegment(folder.name), folderIndex);
+      const directCheatsheets = folder.cheatsheets
+        .sort((a, b) => collator.compare(a.title, b.title))
+        .map(
+          (cheatsheet, cheatsheetIndex) => `
+            <button
+              class="cheatsheet-link${cheatsheet.id === firstCheatsheetId ? " is-active" : ""}"
+              type="button"
+              data-cheatsheet-target="${escapeHtml(cheatsheet.id)}"
+              data-search="${escapeHtml(cheatsheet.searchableText)}"
+              style="--depth: ${depth + 1}"
+            >
+              ${escapeHtml(numberLabel(cheatsheet.title, cheatsheetIndex))}
+            </button>
+          `,
+        )
+        .join("");
+
+      return `
+        <details
+          class="cheatsheet-folder"
+          style="--depth: ${depth}"
+        >
+          <summary>${escapeHtml(folderLabel)}</summary>
+          ${directCheatsheets}
+          ${renderFolderTree(folder.children, firstCheatsheetId, depth + 1)}
+        </details>
+      `;
+    })
+    .join("");
+
+const cheatsheets = await Promise.all(
+  (await getCollection("cheatsheets"))
+    .filter((cheatsheet) => !cheatsheet.data.draft)
+    .map(async (cheatsheet) => {
+      const { Content } = await render(cheatsheet);
+      const sourcePath = pathFromEntry(cheatsheet);
+      const title = cheatsheet.data.title
+        ? prettifySegment(cheatsheet.data.title)
+        : titleFromPath(sourcePath);
+      const certification = cheatsheet.data.certification ?? certificationFromPath(sourcePath);
+      const section = sectionFromPath(sourcePath);
+
+      return {
+        ...cheatsheet,
+        Content,
+        title,
+        certification,
+        section,
+        sourcePath,
+        searchableText: [title, certification, section, cheatsheet.body].join(" "),
+      };
+    }),
+);
+
+cheatsheets.sort((a, b) => a.data.order - b.data.order || a.title.localeCompare(b.title));
+cheatsheets.sort((a, b) => collator.compare(a.id, b.id));
+
+const firstCheatsheetId = cheatsheets[0]?.id;
+
+const cheatsheetsByCertification: Record<string, CheatsheetFolder> = {};
+
+cheatsheets.forEach((cheatsheet) => {
+  const pathParts = cheatsheet.sourcePath.split("/");
+  const folders = pathParts.slice(1, -1);
+
+  cheatsheetsByCertification[cheatsheet.certification] ??= createFolder(
+    cheatsheet.certification,
+  );
+
+  let currentFolder = cheatsheetsByCertification[cheatsheet.certification];
+
+  folders.forEach((folderName) => {
+    currentFolder.children[folderName] ??= createFolder(folderName);
+    currentFolder = currentFolder.children[folderName];
+  });
+
+  currentFolder.cheatsheets.push(cheatsheet);
+});
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="cheatsheets.title">Cheatsheets | Cyber Portfolio</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="cheatsheets-page">
+        <header class="section-heading">
+          <p class="tag" data-i18n="cheatsheets.tag">Cheatsheets</p>
+
+          <h1>
+            <span data-i18n="cheatsheets.headingA">Certification</span><br />
+            <span data-i18n="cheatsheets.headingB">Cheatsheets</span>
+          </h1>
+        </header>
+
+        <div class="writeups-search">
+          <input
+            id="cheatsheetSearch"
+            type="text"
+            data-i18n-placeholder="cheatsheets.search"
+            placeholder="Search by title or content..."
+          />
+        </div>
+
+        <div class="writeups-layout">
+          <aside class="writeups-sidebar cheatsheets-sidebar">
+            <h2 data-i18n="cheatsheets.sidebar">CHEATSHEETS</h2>
+
+            {
+              Object.entries(cheatsheetsByCertification).map(
+                ([certification, certificationFolder]) => (
+                  <details
+                    class="cheatsheet-certification"
+                  >
+                    <summary>{certification}</summary>
+                    <Fragment
+                      set:html={renderFolderTree(
+                        certificationFolder.children,
+                        firstCheatsheetId,
+                      )}
+                    />
+                    {
+                      certificationFolder.cheatsheets.map((cheatsheet, itemIndex) => (
+                        <button
+                          class:list={[
+                            "cheatsheet-link",
+                            cheatsheet.id === firstCheatsheetId && "is-active",
+                          ]}
+                          type="button"
+                          data-cheatsheet-target={cheatsheet.id}
+                          data-search={cheatsheet.searchableText}
+                          style="--depth: 1"
+                        >
+                          {numberLabel(cheatsheet.title, itemIndex)}
+                        </button>
+                      ))
+                    }
+                  </details>
+                ),
+              )
+            }
+          </aside>
+
+          <section class="cheatsheets-content">
+            {
+              cheatsheets.length === 0 ? (
+                <article class="writeup-card">
+                  <h2 data-i18n="cheatsheets.emptyTitle">No cheatsheets yet</h2>
+                  <p data-i18n="cheatsheets.emptyText">
+                    Add Markdown files under subfolders like
+                    src/content/cheatsheets/ejptv2/recon or
+                    src/content/cheatsheets/cpts/active-directory and they will
+                    appear here.
+                  </p>
+                </article>
+              ) : (
+                cheatsheets.map((cheatsheet, index) => (
+                  <article
+                    class:list={["cheatsheet-panel", index === 0 && "is-active"]}
+                    data-cheatsheet-panel={cheatsheet.id}
+                    data-search={cheatsheet.searchableText}
+                  >
+                    <p class="tag">{cheatsheet.certification}</p>
+                    <p class="cheatsheet-section-label">{cheatsheet.section}</p>
+                    <h2>{cheatsheet.title}</h2>
+                    <div class="markdown-content">
+                      <cheatsheet.Content />
+                    </div>
+                  </article>
+                ))
+              )
+            }
+          </section>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById(
+        "cheatsheetSearch",
+      ) as HTMLInputElement;
+      const links = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".cheatsheet-link"),
+      );
+      const folders = Array.from(
+        document.querySelectorAll<HTMLDetailsElement>(
+          ".cheatsheet-certification, .cheatsheet-folder",
+        ),
+      );
+      const panels = Array.from(
+        document.querySelectorAll<HTMLElement>(".cheatsheet-panel"),
+      );
+      const content = document.querySelector(".cheatsheets-content");
+      const highlightRoots = [
+        document.querySelector<HTMLElement>(".cheatsheets-content"),
+      ].filter(Boolean) as HTMLElement[];
+      const escapeRegExp = (value: string) =>
+        value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      const clearSearchHighlights = () => {
+        document.querySelectorAll<HTMLElement>(".search-highlight").forEach((mark) => {
+          mark.replaceWith(document.createTextNode(mark.textContent ?? ""));
+        });
+
+        highlightRoots.forEach((root) => root.normalize());
+      };
+
+      const highlightMatches = (root: HTMLElement, term: string) => {
+        const searchPattern = new RegExp(escapeRegExp(term), "gi");
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const textNodes: Text[] = [];
+        let firstHighlight: HTMLElement | null = null;
+
+        while (walker.nextNode()) {
+          textNodes.push(walker.currentNode as Text);
+        }
+
+        textNodes.forEach((node) => {
+          const value = node.textContent ?? "";
+          const matches = Array.from(value.matchAll(searchPattern));
+
+          if (matches.length === 0) {
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+          let lastIndex = 0;
+
+          matches.forEach((match) => {
+            if (match.index === undefined) {
+              return;
+            }
+
+            const mark = document.createElement("mark");
+            mark.className = "search-highlight";
+            mark.textContent = match[0];
+
+            fragment.append(value.slice(lastIndex, match.index));
+            fragment.append(mark);
+            lastIndex = match.index + match[0].length;
+            firstHighlight ??= mark;
+          });
+
+          fragment.append(value.slice(lastIndex));
+          node.replaceWith(fragment);
+        });
+
+        return firstHighlight;
+      };
+
+      const updateSearchHighlights = (shouldScroll = false) => {
+        const value = searchInput?.value.trim() || "";
+        clearSearchHighlights();
+
+        if (!value) {
+          return;
+        }
+
+        let firstHighlight: HTMLElement | null = null;
+
+        highlightRoots.forEach((root) => {
+          firstHighlight ??= highlightMatches(root, value);
+        });
+
+        const activePanel = document.querySelector<HTMLElement>(
+          ".cheatsheet-panel.is-active",
+        );
+        const firstPanelHighlight =
+          activePanel?.querySelector<HTMLElement>(".search-highlight");
+
+        if (shouldScroll && firstPanelHighlight) {
+          firstPanelHighlight.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        } else if (shouldScroll && firstHighlight) {
+          firstHighlight.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      };
+
+      panels.forEach((panel) => {
+        const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+        const textNodes: Text[] = [];
+
+        while (walker.nextNode()) {
+          textNodes.push(walker.currentNode as Text);
+        }
+
+        textNodes.forEach((node) => {
+          const value = node.textContent ?? "";
+
+          if (!value.includes("![[")) {
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+          const embedPattern = /!\[\[([^\]]+)\]\]/g;
+          let lastIndex = 0;
+          let match;
+
+          while ((match = embedPattern.exec(value)) !== null) {
+            fragment.append(value.slice(lastIndex, match.index));
+
+            const [filename, alt = filename] = match[1].split("|");
+            const image = document.createElement("img");
+            image.src = `/cheatsheets/attachments/${encodeURIComponent(filename.trim())}`;
+            image.alt = alt.trim();
+            image.loading = "lazy";
+
+            fragment.append(image);
+            lastIndex = match.index + match[0].length;
+          }
+
+          fragment.append(value.slice(lastIndex));
+          node.replaceWith(fragment);
+        });
+      });
+
+      const showCheatsheet = (id: string, shouldScroll = false) => {
+        links.forEach((link) => {
+          link.classList.toggle("is-active", link.dataset.cheatsheetTarget === id);
+        });
+
+        panels.forEach((panel) => {
+          panel.classList.toggle("is-active", panel.dataset.cheatsheetPanel === id);
+        });
+
+        updateSearchHighlights(shouldScroll);
+
+        if (shouldScroll && content && !searchInput?.value.trim()) {
+          content.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+
+      links.forEach((link) => {
+        link.addEventListener("click", () => {
+          const target = link.dataset.cheatsheetTarget;
+
+          if (target) {
+            showCheatsheet(target, true);
+          }
+        });
+      });
+
+      searchInput?.addEventListener("input", () => {
+        const value = searchInput.value.toLowerCase().trim();
+        let firstVisibleId = "";
+
+        links.forEach((link) => {
+          const text = link.dataset.search?.toLowerCase() || "";
+          const isVisible = text.includes(value);
+          link.style.display = isVisible ? "block" : "none";
+
+          if (isVisible && !firstVisibleId) {
+            firstVisibleId = link.dataset.cheatsheetTarget || "";
+          }
+        });
+
+        folders
+          .slice()
+          .reverse()
+          .forEach((folder) => {
+          const summaryText = folder
+            .querySelector(":scope > summary")
+            ?.textContent?.toLowerCase() || "";
+          const hasVisibleLink = Array.from(
+            folder.querySelectorAll<HTMLElement>(".cheatsheet-link, details"),
+          ).some((child) => child.style.display !== "none");
+          const isVisible = !value || summaryText.includes(value) || hasVisibleLink;
+          folder.style.display = isVisible ? "block" : "none";
+
+          if (value && isVisible) {
+            folder.open = true;
+          }
+        });
+
+        panels.forEach((panel) => {
+          const text = panel.dataset.search?.toLowerCase() || "";
+          panel.dataset.filtered = text.includes(value) ? "true" : "false";
+        });
+
+        if (firstVisibleId) {
+          showCheatsheet(firstVisibleId, true);
+        } else {
+          updateSearchHighlights();
+        }
+      });
+    </script>
+  </body>
+</html>

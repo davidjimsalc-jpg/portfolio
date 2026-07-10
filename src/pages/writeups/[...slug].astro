@@ -1,0 +1,169 @@
+---
+import "../../styles/global.css";
+import LanguageToggle from "../../components/LanguageToggle.astro";
+import { getCollection, render } from "astro:content";
+
+const platformLabels = {
+  htb: "HTB",
+  tryhackme: "TryHackMe",
+};
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const titleFromId = (id: string) => {
+  const filename = id.split("/").at(-1) ?? id;
+  return filename
+    .replace(/\.(md|mdx)$/i, "")
+    .replace(/^\d+[\s.-]+/, "")
+    .replace(/[-_]+/g, " ");
+};
+
+const platformFromId = (id: string) => {
+  const platform = id.split("/")[0] ?? "writeups";
+  return platformLabels[platform as keyof typeof platformLabels] ?? platform;
+};
+
+function slugFromWriteup(writeup: Awaited<ReturnType<typeof getCollection>>[number]) {
+  return (
+    writeup.data.slug ??
+    writeup.id
+      .replace(/\.(md|mdx)$/i, "")
+      .split("/")
+      .map(slugify)
+      .join("/")
+  );
+}
+
+export async function getStaticPaths() {
+  const writeups = (await getCollection("writeups")).filter((writeup) => !writeup.data.draft);
+  const pathSlug = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  const writeupSlug = (writeup: Awaited<ReturnType<typeof getCollection>>[number]) =>
+    writeup.data.slug ??
+    writeup.id
+      .replace(/\.(md|mdx)$/i, "")
+      .split("/")
+      .map(pathSlug)
+      .join("/");
+
+  return writeups.map((writeup) => ({
+    params: { slug: writeupSlug(writeup) },
+    props: { writeup },
+  }));
+}
+
+const { writeup } = Astro.props;
+const { Content } = await render(writeup);
+const title = writeup.data.title ?? titleFromId(writeup.id);
+const platform = writeup.data.platform ?? platformFromId(writeup.id);
+const tags = [
+  platform,
+  ...writeup.data.categories,
+  ...writeup.data.tags,
+  writeup.data.difficulty,
+].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Writeups</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <article class="writeup-detail">
+        <p class="tag">{platform}</p>
+
+        <h1>{title}</h1>
+
+        <div class="writeup-tags">
+          {tags.map((tag) => <span>{tag}</span>)}
+        </div>
+
+        <div class="markdown-content">
+          <Content />
+        </div>
+      </article>
+    </main>
+
+    <script>
+      const markdownContent = document.querySelector(".markdown-content");
+
+      if (markdownContent) {
+        const walker = document.createTreeWalker(markdownContent, NodeFilter.SHOW_TEXT);
+        const textNodes: Text[] = [];
+
+        while (walker.nextNode()) {
+          textNodes.push(walker.currentNode as Text);
+        }
+
+        textNodes.forEach((node) => {
+          const value = node.textContent ?? "";
+
+          if (!value.includes("![[")) {
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+          const embedPattern = /!\[\[([^\]]+)\]\]/g;
+          let lastIndex = 0;
+          let match;
+
+          while ((match = embedPattern.exec(value)) !== null) {
+            fragment.append(value.slice(lastIndex, match.index));
+
+            const [filename, alt = filename] = match[1].split("|");
+            const image = document.createElement("img");
+            image.src = `/writeups/attachments/${encodeURIComponent(filename.trim())}`;
+            image.alt = alt.trim();
+            image.loading = "lazy";
+
+            fragment.append(image);
+            lastIndex = match.index + match[0].length;
+          }
+
+          fragment.append(value.slice(lastIndex));
+          node.replaceWith(fragment);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="certs.title">Certifications | David Jimenez Salcedo</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="certifications">
+        <p class="tag" data-i18n="certs.tag">Certifications</p>
+
+        <h1>
+          Cybersecurity<br />
+          <span data-i18n="certs.heading">Learning Path</span>
+        </h1>
+
+        <p class="description" data-i18n="certs.description">
+          A selection of certifications focused on Linux administration,
+          ethical hacking, penetration testing and offensive security.
+        </p>
+
+
+        <div class="cert-list">
+        <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/uax.png" alt="Computer Engineering">
+            </div>
+            <div class="cert-content">
+              <h2>Computer Engineering UAX</h2>
+              <p data-i18n="certs.uaxDescription">
+                University degree focused on computer systems, software development, networking, 
+                operating systems, cybersecurity fundamentals and cloud technologies. It provides 
+                a solid understanding of how hardware, software and infrastructure interact, forming 
+                the technical foundation required to design, develop and secure modern information systems.
+              </p>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/LPIC1.png" alt="LPIC-1">
+            </div>
+            <div class="cert-content">
+              <h2>LPIC-1</h2>
+              <p data-i18n="certs.lpicDescription">
+                Linux Professional Institute certification focused on GNU/Linux
+                administration, command line usage, system maintenance,
+                permissions, networking basics and essential services.
+              </p>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/ethicalhacker.png" alt="Cisco Ethical Hacking">
+            </div>
+            <div class="cert-content">
+              <h2>Ethical Hacker Cisco</h2>
+              <p data-i18n="certs.ciscoDescription">
+                Introductory ethical hacking certification covering security
+                fundamentals, reconnaissance, vulnerability analysis, basic
+                exploitation concepts, defensive thinking and responsible
+                testing methodology.
+              </p>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/ejptv2.png" alt="eJPTv2">
+            </div>
+            <div class="cert-content">
+              <h2>eJPTv2</h2>
+              <p data-i18n="certs.ejptDescription">
+                Junior penetration testing certification focused on practical
+                assessment methodology, network enumeration, web application
+                testing, exploitation basics, pivoting and report writing.
+              </p>
+            </div>
+          </article>
+
+        <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/pentesterpath.png" alt="Penetration Tester Path HTB">
+            </div>
+            <div class="cert-content">
+              <h2>Penetration Tester Path HTB</h2>
+              <p data-i18n="certs.htbPathDescription">
+                Comprehensive training path designed to develop real-world penetration testing 
+                skills through hands-on laboratories. Covers the complete penetration testing 
+                methodology, including information gathering, web exploitation, Active Directory 
+                attacks, privilege escalation, lateral movement, pivoting, post-exploitation and 
+                professional report writing. The path prepares students for the CPTS certification 
+                by simulating realistic enterprise environments.
+              </p>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-logo">
+                <img src="/images/certifications/cpts1.png" alt="CPTS">
+            </div>
+            <div class="cert-content">
+              <h2>CPTS <span data-i18n="certs.soon">Coming Soon</span></h2>
+              <p data-i18n="certs.cptsDescription">
+                Advanced hands-on penetration testing certification with a
+                strong enterprise focus, widely recognized for its more
+                complete coverage of real-world enterprise environments than
+                OSCP. It covers the full assessment lifecycle: information gathering,
+                vulnerability validation, web and API exploitation, Active
+                Directory attacks, pivoting, lateral movement, privilege
+                escalation, post-exploitation and professional reporting.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+  </body>
+</html>

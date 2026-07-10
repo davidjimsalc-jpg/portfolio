@@ -1,0 +1,81 @@
+---
+import "../styles/global.css";
+import LanguageToggle from "../components/LanguageToggle.astro";
+import ToolMarquee from "../components/ToolMarquee.astro";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="contact.title">Contact | David Jimenez Salcedo</title>
+  </head>
+
+  <body>
+    <main class="page">
+      <nav class="navbar">
+        <div class="logo">Cyber<span>Portfolio</span></div>
+
+        <div class="nav-links">
+          <a href="/" data-i18n="nav.home">Home</a>
+          <a href="/writeups" data-i18n="nav.writeups">Writeups</a>
+          <a href="/projects-tools" data-i18n="nav.projects">Projects / Tools</a>
+          <a href="/cheatsheets" data-i18n="nav.cheatsheets">Cheatsheets</a>
+          <a href="/contact" data-i18n="nav.contact">Contact</a>
+        </div>
+
+        <div class="nav-actions">
+          <LanguageToggle />
+          <a
+            class="nav-button"
+            href="/cv/David-Jimenez-CV.zip"
+            download
+            data-i18n="nav.cv"
+          >
+            Download CV
+          </a>
+        </div>
+      </nav>
+
+      <section class="contact">
+        <p class="tag" data-i18n="contact.tag">Contact</p>
+
+        <h1 data-i18n="contact.heading">Let&apos;s Connect</h1>
+
+        <p class="description" data-i18n="contact.description">
+          Feel free to reach out through email, LinkedIn, GitHub or my Hack The
+          Box profiles.
+        </p>
+
+        <div class="contact-grid">
+          <a class="contact-card" href="mailto:david.jim.salc@gmail.com">
+            <div class="contact-icon">@</div>
+            <h2>Email</h2>
+            <p>david.jim.salc@gmail.com</p>
+          </a>
+
+          <a class="contact-card" href="https://www.linkedin.com/in/david-jimenez-salcedo" target="_blank">
+            <div class="contact-icon">in</div>
+            <h2>LinkedIn</h2>
+            <p>www.linkedin.com/in/david-jimenez-salcedo</p>
+          </a>
+
+          <a class="contact-card" href="https://github.com/davidjimsalc-jpg" target="_blank">
+            <div class="contact-icon">GH</div>
+            <h2>GitHub</h2>
+            <p>https://github.com/davidjimsalc-jpg</p>
+          </a>
+
+          <a class="contact-card" href="https://profile.hackthebox.com/profile/019d2168-3588-7182-81af-64d6f8a05c17" target="_blank">
+            <div class="contact-icon">HTB</div>
+            <h2>HTB Academy / Labs</h2>
+            <p>Hack The Box profile</p>
+          </a>
+        </div>
+
+        <ToolMarquee />
+      </section>
+    </main>
+  </body>
+</html>
