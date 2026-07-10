@@ -1311,10 +1311,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tool-marquee-track {
-    animation-play-state: paused;
-  }
-
   *,
   *::before,
   *::after {
